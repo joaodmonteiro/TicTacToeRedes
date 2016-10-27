@@ -108,9 +108,9 @@ namespace Client.Controllers
                                     Console.WriteLine(receivedNetworkMessage.Message);
                                 break;
                                 case NetworkInstruction.MakeMove:
-                                    int answer = int.Parse(Console.ReadLine());
+                                    string answer = Console.ReadLine();
                                     binaryWriter.Write(answer);
-                                    _networkInstruction = NetworkInstruction.Wait;
+                                    
                                 break;
                                 case NetworkInstruction.GameEnded:
                                     _playerState = PlayerState.GameEnded;
