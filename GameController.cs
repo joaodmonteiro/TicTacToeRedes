@@ -89,55 +89,72 @@ namespace Server.Controllers
         {
             // We know that the server will send a JSON string
             // so we prepare the statement for it
+
+            int currentPlayer = GameStore.Instance.Game.PlayerList.FindIndex(p => p.Turn) + 1; //1 if player 1, 2 if player 2
+
             int answer = GameStore.Instance.Game.PlayerList.Find(p => p.Turn).BinaryReader.Read();
-            while (answer == 0)
+
+            while (answer == -1 || answer == 0)
             {
                 answer = GameStore.Instance.Game.PlayerList.Find(p => p.Turn).BinaryReader.Read();
                 Thread.Sleep(100);
             }
 
-            string hint = string.Empty;
+            Console.WriteLine(answer);
+            //string hint = string.Empty;
 
             NetworkInstruction targetNetworkInstruction = NetworkInstruction.Wait;
 
-            for (int i = 0; i < 3; i++)
+            if (answer == Positions[answer/3, answer%3])
             {
-                for (int j = 0; j < 3; j++)
+                if (currentPlayer == 1)
                 {
-                    if (answer == Positions[i, j])
-                    {
-                        if (player1 == null)
-                        {
-                            player1 = GameStore.Instance.Game.PlayerList.Find(p => p.Turn);
-
-                            Positions[i, j] = 'X';
-                        }
-                        else if (player2 == null)
-                        {
-                            player2 = GameStore.Instance.Game.PlayerList.Find(p => p.Turn);
-
-                            Positions[i, j] = 'O';
-                        }
-                        else if (player1.Id == GameStore.Instance.Game.PlayerList.Find(p => p.Turn).Id)
-                        {
-                            Positions[i, j] = 'X';
-                        }
-                        else if (player2.Id == GameStore.Instance.Game.PlayerList.Find(p => p.Turn).Id)
-                        {
-                            Positions[i, j] = 'O';
-                        }
-                    }
-                    else 
-                    {
-                        if (i == 2 && j == 2)
-                        {
-                            //AskPlayerToPlay();
-                            answer = GameStore.Instance.Game.PlayerList.Find(p => p.Turn).BinaryReader.Read();
-                            Thread.Sleep(100);
-                        }
-                    } 
+                    Positions[answer/3, answer%3] = 'X';
+                }
+                else
+                {
+                    Positions[answer / 3, answer % 3] = 'O';
                 }
             }
+
+            //for (int i = 0; i < 3; i++)
+            //{
+            //    for (int j = 0; j < 3; j++)
+            //    {
+            //        if (answer == Positions[i, j])
+            //        {
+            //            if (player1 == null)
+            //            {
+            //                player1 = GameStore.Instance.Game.PlayerList.Find(p => p.Turn);
+
+            //                Positions[i, j] = 'X';
+            //            }
+            //            else if (player2 == null)
+            //            {
+            //                player2 = GameStore.Instance.Game.PlayerList.Find(p => p.Turn);
+
+            //                Positions[i, j] = 'O';
+            //            }
+            //            else if (player1.Id == GameStore.Instance.Game.PlayerList.Find(p => p.Turn).Id)
+            //            {
+            //                Positions[i, j] = 'X';
+            //            }
+            //            else if (player2.Id == GameStore.Instance.Game.PlayerList.Find(p => p.Turn).Id)
+            //            {
+            //                Positions[i, j] = 'O';
+            //            }
+            //        }
+            //        else 
+            //        {
+            //            if (i == 2 && j == 2)
+            //            {
+            //                //AskPlayerToPlay();
+            //                answer = GameStore.Instance.Game.PlayerList.Find(p => p.Turn).BinaryReader.Read();
+            //                Thread.Sleep(100);
+            //            }
+            //        } 
+            //    }
+            //}
 
 
 
@@ -184,7 +201,7 @@ namespace Server.Controllers
 
             NetworkMessage networkMessageToSend = new NetworkMessage()
             {
-                Message = "O jogador " + GameStore.Instance.Game.PlayerList.Find(p => p.Turn).PlayerName + " tentou " + answer + "\n" + hint,
+                Message = "O jogador " + GameStore.Instance.Game.PlayerList.Find(p => p.Turn).PlayerName + " tentou " + answer + "\n",
 
                 NetworkInstruction = targetNetworkInstruction
             };
