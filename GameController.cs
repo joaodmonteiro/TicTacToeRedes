@@ -92,30 +92,55 @@ namespace Server.Controllers
 
             int currentPlayer = GameStore.Instance.Game.PlayerList.FindIndex(p => p.Turn) + 1; //1 if player 1, 2 if player 2
 
-            int answer = GameStore.Instance.Game.PlayerList.Find(p => p.Turn).BinaryReader.Read();
+            int k;
 
-            while (answer == -1 || answer == 0)
+            string answer;
+
+            do
             {
-                answer = GameStore.Instance.Game.PlayerList.Find(p => p.Turn).BinaryReader.Read();
-                Thread.Sleep(100);
-            }
+                Console.WriteLine("ANTES");
+                answer = GameStore.Instance.Game.PlayerList.Find(p => p.Turn).BinaryReader.ReadString();
+                Console.WriteLine("DEPOIS");
+                Console.WriteLine(answer);
 
-            Console.WriteLine(answer);
+            } while (!Int32.TryParse(answer, out k) || k < 1 || k > 9 || Positions[(k - 1) / 3, (k - 1) % 3] == 'O' || Positions[(k - 1) / 3, (k - 1) % 3] == 'X');
+
+            Console.WriteLine("SAI DO CICLOOOO!!");
+
+            //while (Int32.TryParse(answer, out k))
+            //{
+            //    while (k < 1 || k > 9 || Positions[(k - 1) / 3, (k - 1) % 3] == 'O' || Positions[(k - 1) / 3, (k - 1) % 3] == 'X')
+            //    {
+            //        answer = GameStore.Instance.Game.PlayerList.Find(p => p.Turn).BinaryReader.ReadString();
+            //        Thread.Sleep(100);
+            //        Int32.TryParse(answer, out k);
+            //    }
+            //    break;
+            //}
+
+            
+            //Console.WriteLine((answer-1) / 3);
+            //Console.WriteLine((answer-1) % 3);
             //string hint = string.Empty;
 
             NetworkInstruction targetNetworkInstruction = NetworkInstruction.Wait;
 
-            if (answer == Positions[answer/3, answer%3])
-            {
+            //if (answer == Positions[(answer-1)/3, (answer-1)%3])
+            //{
+                Console.WriteLine((k - 1) / 3);
+                Console.WriteLine((k - 1) % 3);
+
                 if (currentPlayer == 1)
                 {
-                    Positions[answer/3, answer%3] = 'X';
+                    Positions[(k-1)/3, (k-1)%3] = 'X';
                 }
                 else
                 {
-                    Positions[answer / 3, answer % 3] = 'O';
+                    Positions[(k-1) / 3, (k-1) % 3] = 'O';
                 }
-            }
+            //}
+
+            
 
             //for (int i = 0; i < 3; i++)
             //{
@@ -159,7 +184,7 @@ namespace Server.Controllers
 
 
 
-            
+
 
             //if (answer == GameStore.Instance.Game.TargetNumber)
             //{
